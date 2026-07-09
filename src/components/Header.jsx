@@ -14,18 +14,19 @@ const Header = () => {
         <div className="hidden md:flex gap-8 font-medium">
           <Link to="/">Home</Link>
           <Link to="/products">Products</Link>
-          <Link to="/categories">Categories</Link>
-          <Link to="/contact">Contact</Link>
+            {user?.isAdmin && (
+    <Link to="/admin">Admin</Link>
+  )}
         </div>
 
         <div className="flex items-center gap-5">
           <Link to="/cart" className="relative">
             <ShoppingCart size={26} />
-             {cartCount > 0 && (
-        <span className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">
-          {cartCount}
-        </span>
-      )}
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">
+                {cartCount}
+              </span>
+            )}
           </Link>
 
           {user ? (

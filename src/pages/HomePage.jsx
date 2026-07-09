@@ -1,5 +1,4 @@
 import React from "react";
-import { Star } from "lucide-react";
 import { useProducts } from "../contexts/ProductContext";
 import { Link } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
@@ -52,7 +51,7 @@ const HomePage = () => {
         </div>
 
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {products.map((item) => (
+          {products.slice(0, 8).map((item) => (
             <div
               key={item._id}
               className="bg-white rounded-2xl overflow-hidden shadow hover:shadow-xl duration-300 group"
@@ -66,37 +65,37 @@ const HomePage = () => {
               </div>
 
               <div className="p-5">
-                <h3 className="text-xl font-semibold">{item.name}</h3>
+                <h3 className="text-xl font-semibold line-clamp-1">
+                  {item.name}
+                </h3>
 
                 <p className="text-gray-500 text-sm mt-1 line-clamp-2">
                   {item.description}
                 </p>
 
-               
-
                 <div className="flex justify-between items-center my-5">
                   <span className="text-2xl font-bold text-indigo-600">
                     ₹{item.price}
                   </span>
-                 <p
-                  className={`text-sm mt-2 font-medium ${item.stock > 0 ? "text-green-600" : "text-red-500"}`}
-                >
-                  {item.stock > 0 ? `In Stock: ${item.stock}` : "Out of Stock"}
-                </p>
-                 
-                </div>
-                 <button
-                   onClick={() => addToCart(item)}
-
-                    disabled={item.stock === 0}
-                    className={`px-5 py-2 rounded-lg text-white w-full ${
-                      item.stock === 0
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-indigo-600 hover:bg-indigo-700"
-                    }`}
+                  <p
+                    className={`text-sm mt-2 font-medium ${item.stock > 0 ? "text-green-600" : "text-red-500"}`}
                   >
-                    {item.stock === 0 ? "Out of Stock" : "Add to Cart"}
-                  </button>
+                    {item.stock > 0
+                      ? `In Stock: ${item.stock}`
+                      : "Out of Stock"}
+                  </p>
+                </div>
+                <button
+                  onClick={() => addToCart(item)}
+                  disabled={item.stock === 0}
+                  className={`px-5 py-2 rounded-lg text-white w-full ${
+                    item.stock === 0
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-indigo-600 hover:bg-indigo-700"
+                  }`}
+                >
+                  {item.stock === 0 ? "Out of Stock" : "Add to Cart"}
+                </button>
               </div>
             </div>
           ))}

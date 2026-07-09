@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_URL = 'https://mern-backend-nf2l.onrender.com/api';
+const API_URL = 'http://localhost:4000/api';
 
 
 const api = axios.create({
