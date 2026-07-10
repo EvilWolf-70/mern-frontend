@@ -7,7 +7,7 @@ const HomePage = () => {
   const { products, loading, error } = useProducts();
   const { addToCart } = useCart();
 
-  if (loading) return <h2>Loading...</h2>;
+  // if (loading) return <h2>Loading...</h2>;
 
   if (error) return <h2>{error}</h2>;
   return (
@@ -51,11 +51,17 @@ const HomePage = () => {
           </p>
         </div>
 
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {products.slice(0, 8).map((item) => (
-            <ProductCard key={item._id} item={item} addToCart={addToCart} />
-          ))}
-        </div>
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="w-14 h-14 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : (
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {products.slice(0, 8).map((item) => (
+              <ProductCard key={item._id} item={item} addToCart={addToCart} />
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );
