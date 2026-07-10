@@ -18,7 +18,7 @@ const Dashboard = () => {
 );
   const stats = {
     totalProducts: products.length,
-    totalOrders: 48,
+    totalOrders: orders.length,
     totalUsers: users.length,
     totalRevenue,
   };

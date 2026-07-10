@@ -24,6 +24,67 @@ export const ProductProvider = ({ children }) => {
     }
   };
 
+  const createProduct = async (productData) => {
+  try {
+    setLoading(true);
+
+    const { data } = await api.post("/products", productData);
+    console.log(data.products)
+    setProducts((prev) => [...prev, data.product]);
+
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.message,
+    };
+  } finally {
+    setLoading(false);
+  }
+};
+
+const updateProduct = async (id, productData) => {
+  try {
+    setLoading(true);
+
+    const { data } = await api.put(`/products/${id}`, productData);
+
+    setProducts((prev) =>
+      prev.map((item) =>
+        item._id === id ? data.product : item
+      )
+    );
+
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.message,
+    };
+  } finally {
+    setLoading(false);
+  }
+};
+
+const deleteProduct = async (id) => {
+  try {
+    await api.delete(`/products/${id}`);
+
+    setProducts((prev) =>
+      prev.filter((item) => item._id !== id)
+    );
+
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.message,
+    };
+  }
+};
+
+
+
   useEffect(() => {
     getProducts();
   }, []);
@@ -35,6 +96,10 @@ export const ProductProvider = ({ children }) => {
         loading,
         error,
         getProducts,
+        createProduct,
+        updateProduct,
+        deleteProduct,
+
       }}
     >
       {children}

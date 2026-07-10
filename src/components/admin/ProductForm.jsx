@@ -1,4 +1,3 @@
-
 import React from "react";
 
 const ProductForm = ({
@@ -34,9 +33,7 @@ const ProductForm = ({
 
         {/* Price */}
         <div>
-          <label className="block mb-2 font-medium text-gray-700">
-            Price
-          </label>
+          <label className="block mb-2 font-medium text-gray-700">Price</label>
 
           <input
             type="number"
@@ -68,9 +65,7 @@ const ProductForm = ({
 
         {/* Stock */}
         <div>
-          <label className="block mb-2 font-medium text-gray-700">
-            Stock
-          </label>
+          <label className="block mb-2 font-medium text-gray-700">Stock</label>
 
           <input
             type="number"
@@ -138,11 +133,19 @@ const ProductForm = ({
             {loading
               ? "Saving..."
               : isEditing
-              ? "Update Product"
-              : "Add Product"}
+                ? "Update Product"
+                : "Add Product"}
           </button>
 
           <button
+            onClick={() => {
+              handleChange({
+                target: {
+                  name: "reset",
+                  value: "",
+                },
+              });
+            }}
             type="reset"
             className="px-6 border border-gray-300 rounded-xl hover:bg-gray-100 transition"
           >
@@ -155,4 +158,3 @@ const ProductForm = ({
 };
 
 export default ProductForm;
-

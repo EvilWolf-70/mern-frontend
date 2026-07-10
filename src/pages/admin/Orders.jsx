@@ -2,17 +2,20 @@
 import { useOrders } from "../../contexts/OrderContext";
 import OrderTable from "../../components/admin/OrderTable";
 
+import { useEffect } from "react";
 const Orders = () => {
-  const { orders, updateOrderStatus } = useOrders();
-
+  const { orders, updateOrderStatus, getAllOrders } = useOrders();
+  useEffect(() => {
+    getAllOrders();
+  }, []);
   const handleStatusChange = async (orderId, orderStatus) => {
-      const res = await updateOrderStatus(orderId, orderStatus);
+    const res = await updateOrderStatus(orderId, orderStatus);
 
-  if (res.success) {
-    alert("Status updated");
-  } else {
-    alert(res.message);
-  }
+    if (res.success) {
+      alert("Status updated");
+    } else {
+      alert(res.message);
+    }
   };
 
   return (
@@ -34,9 +37,7 @@ const Orders = () => {
           <div className="bg-white rounded-xl shadow p-5">
             <h3 className="text-gray-500 text-sm">Total Orders</h3>
 
-            <h2 className="text-3xl font-bold mt-2">
-              {orders.length}
-            </h2>
+            <h2 className="text-3xl font-bold mt-2">{orders.length}</h2>
           </div>
 
           <div className="bg-white rounded-xl shadow p-5">
@@ -51,7 +52,10 @@ const Orders = () => {
             <h3 className="text-gray-500 text-sm">Processing</h3>
 
             <h2 className="text-3xl font-bold text-blue-500 mt-2">
-              {orders.filter((order) => order.orderStatus === "Processing").length}
+              {
+                orders.filter((order) => order.orderStatus === "Processing")
+                  .length
+              }
             </h2>
           </div>
 
@@ -59,16 +63,16 @@ const Orders = () => {
             <h3 className="text-gray-500 text-sm">Delivered</h3>
 
             <h2 className="text-3xl font-bold text-green-500 mt-2">
-              {orders.filter((order) => order.orderStatus === "Delivered").length}
+              {
+                orders.filter((order) => order.orderStatus === "Delivered")
+                  .length
+              }
             </h2>
           </div>
         </div>
 
         {/* Orders Table */}
-        <OrderTable
-          orders={orders}
-          onStatusChange={handleStatusChange}
-        />
+        <OrderTable orders={orders} onStatusChange={handleStatusChange} />
       </div>
     </div>
   );

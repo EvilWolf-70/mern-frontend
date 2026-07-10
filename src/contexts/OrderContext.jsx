@@ -1,7 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import api from "../services/api";
-
+import { useAuth } from "./AuthContext";
 const OrderContext = createContext();
+
 
 export const useOrders = () => {
   const context = useContext(OrderContext);
@@ -16,7 +17,7 @@ export const useOrders = () => {
 export const OrderProvider = ({ children }) => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
-
+const { user } = useAuth();
   // Get all orders
   const getAllOrders = async () => {
     try {
@@ -69,15 +70,41 @@ export const OrderProvider = ({ children }) => {
   }
 };
 
-  useEffect(() => {
-    getAllOrders();
-  }, []);
+// Place Order
+const placeOrder = async (orderData) => {
+  try {
+    setLoading(true);
+
+    const { data } = await api.post("/orders", orderData);
+
+    // Add the newly created order to the state
+    setOrders((prev) => [data.order, ...prev]);
+
+    return {
+      success: true,
+      data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.message || "Failed to place order",
+    };
+  } finally {
+    setLoading(false);
+  }
+};
+
+  // useEffect(() => {
+  //   getAllOrders();
+   
+  // }, []);
 
   const value = {
     orders,
     loading,
     getAllOrders,
     updateOrderStatus,
+    placeOrder
   };
 
   return (

@@ -1,6 +1,8 @@
+import { useNavigate } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
-
+import { useOrders } from "../contexts/OrderContext";
 const CartPage = () => {
+  const navigate = useNavigate();
   const {
     cartItems,
     totalPrice,
@@ -9,6 +11,52 @@ const CartPage = () => {
     removeFromCart,
     clearCart,
   } = useCart();
+
+  const { placeOrder } = useOrders();
+
+  const handlePlaceOrder = async () => {
+    const orderData = {
+      shippingAddress: {
+        fullName: "John Doe",
+        phone: "9876543210",
+        address: "12 Main Street",
+        city: "Salem",
+        state: "Tamil Nadu",
+        postalCode: "636001",
+        country: "India",
+      },
+
+      orderItems: cartItems.map((item) => ({
+        product: item._id,
+        name: item.name,
+        image: item.image,
+        quantity: item.qty,
+        price: item.price,
+      })),
+
+      paymentMethod: "COD",
+
+      itemsPrice: totalPrice,
+
+      shippingPrice: 100,
+
+      taxPrice: totalPrice * 0.18,
+
+      totalPrice: totalPrice + 100 + totalPrice * 0.18,
+    };
+
+    const result = await placeOrder(orderData);
+
+    if (result.success) {
+      alert("Order placed successfully!");
+
+      clearCart();
+
+      navigate("/");
+    } else {
+      alert(result.message);
+    }
+  };
 
   if (cartItems.length === 0) {
     return (
@@ -90,7 +138,10 @@ const CartPage = () => {
             <span className="font-bold">₹{totalPrice.toFixed(2)}</span>
           </div>
 
-          <button className="w-full bg-indigo-600 text-white py-3 rounded-lg">
+          <button
+            onClick={handlePlaceOrder}
+            className="w-full bg-indigo-600 text-white py-3 rounded-lg"
+          >
             Proceed to Checkout
           </button>
         </div>

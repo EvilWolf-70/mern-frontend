@@ -2,32 +2,16 @@
 import React, { useState } from "react";
 import ProductForm from "../../components/admin/ProductForm";
 import ProductTable from "../../components/admin/ProductTable";
+import { useProducts } from "../../contexts/ProductContext";
 
 const Products = () => {
-  const [loading, setLoading] = useState(false);
+  const {  products,
+    loading,
+    createProduct,
+    updateProduct,
+    deleteProduct } = useProducts();
 
-  const [products, setProducts] = useState([
-    {
-      _id: "1",
-      name: "Nike Shoes",
-      price: 2999,
-      category: "Footwear",
-      stock: 15,
-      image:
-        "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300",
-      description: "Premium sports shoes for daily use.",
-    },
-    {
-      _id: "2",
-      name: "Smart Watch",
-      price: 4999,
-      category: "Electronics",
-      stock: 8,
-      image:
-        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300",
-      description: "Latest smartwatch with health tracking.",
-    },
-  ]);
+  
 
   const initialState = {
     name: "",
@@ -50,72 +34,54 @@ const Products = () => {
   };
 
   // Add / Update Product
-  const handleSubmit = (e) => {
+ const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setLoading(true);
+    let result;
 
     if (editingId) {
-      setProducts((prev) =>
-        prev.map((product) =>
-          product._id === editingId
-            ? { ...product, ...formData }
-            : product
-        )
-      );
-
-      alert("Product Updated Successfully");
+        result = await updateProduct(editingId, formData);
     } else {
-      const newProduct = {
-        _id: Date.now().toString(),
-        ...formData,
-      };
-
-      setProducts((prev) => [...prev, newProduct]);
-
-      alert("Product Added Successfully");
+        result = await createProduct(formData);
     }
 
-    setFormData(initialState);
-    setEditingId(null);
-    setLoading(false);
-  };
+    if (result.success) {
+        setFormData(initialState);
+        setEditingId(null);
+    } else {
+        alert(result.message);
+    }
+};
 
   // Edit Product
   const handleEdit = (product) => {
     setEditingId(product._id);
 
     setFormData({
-      name: product.name,
-      price: product.price,
-      category: product.category,
-      stock: product.stock,
-      image: product.image,
-      description: product.description,
+        name: product.name,
+        price: product.price,
+        category: product.category,
+        stock: product.stock,
+        image: product.image,
+        description: product.description,
     });
 
     window.scrollTo({
-      top: 0,
-      behavior: "smooth",
+        top: 0,
+        behavior: "smooth",
     });
-  };
+};
 
   // Delete Product
-  const handleDelete = (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this product?"
-    );
+const handleDelete = async (id) => {
+    if (!window.confirm("Delete Product?")) return;
 
-    if (!confirmDelete) return;
-
-    setProducts((prev) =>
-      prev.filter((product) => product._id !== id)
-    );
-  };
+    await deleteProduct(id);
+};
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <div className="max-w-7xl mx-auto">
+      <div className=" mx-auto">
 
         <h1 className="text-3xl font-bold text-gray-800 mb-8">
           Products Management
