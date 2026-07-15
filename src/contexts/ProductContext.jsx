@@ -15,7 +15,7 @@ export const ProductProvider = ({ children }) => {
       setLoading(true);
 
       const { data } = await api.get("/products");
-   
+
       setProducts(data.products);
     } catch (error) {
       setError(error.response?.data?.message || "Failed to fetch products");
@@ -25,65 +25,58 @@ export const ProductProvider = ({ children }) => {
   };
 
   const createProduct = async (productData) => {
-  try {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    const { data } = await api.post("/products", productData);
-    console.log(data.products)
-    setProducts((prev) => [...prev, data.product]);
+      const { data } = await api.post("/products", productData);
+      console.log(data);
+      setProducts((prev) => [...prev, data.createdProduct]);
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message,
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    return { success: true };
-  } catch (error) {
-    return {
-      success: false,
-      message: error.response?.data?.message,
-    };
-  } finally {
-    setLoading(false);
-  }
-};
+  const updateProduct = async (id, productData) => {
+    try {
+      setLoading(true);
 
-const updateProduct = async (id, productData) => {
-  try {
-    setLoading(true);
+      const { data } = await api.put(`/products/${id}`, productData);
 
-    const { data } = await api.put(`/products/${id}`, productData);
+      setProducts((prev) =>
+        prev.map((item) => (item._id === id ? data.product : item)),
+      );
 
-    setProducts((prev) =>
-      prev.map((item) =>
-        item._id === id ? data.product : item
-      )
-    );
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message,
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    return { success: true };
-  } catch (error) {
-    return {
-      success: false,
-      message: error.response?.data?.message,
-    };
-  } finally {
-    setLoading(false);
-  }
-};
+  const deleteProduct = async (id) => {
+    try {
+      await api.delete(`/products/${id}`);
 
-const deleteProduct = async (id) => {
-  try {
-    await api.delete(`/products/${id}`);
+      setProducts((prev) => prev.filter((item) => item._id !== id));
 
-    setProducts((prev) =>
-      prev.filter((item) => item._id !== id)
-    );
-
-    return { success: true };
-  } catch (error) {
-    return {
-      success: false,
-      message: error.response?.data?.message,
-    };
-  }
-};
-
-
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message,
+      };
+    }
+  };
 
   useEffect(() => {
     getProducts();
@@ -99,7 +92,6 @@ const deleteProduct = async (id) => {
         createProduct,
         updateProduct,
         deleteProduct,
-
       }}
     >
       {children}

@@ -4,6 +4,8 @@ import { Pencil, Trash2 } from "lucide-react";
 
 const ProductTable = ({
   products = [],
+   searchTerm,
+  setSearchTerm,
   onEdit,
   onDelete,
 }) => {
@@ -17,6 +19,8 @@ const ProductTable = ({
 
         <input
           type="text"
+           value={searchTerm}
+  onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Search products..."
           className="w-full md:w-72 border rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-indigo-500"
         />
@@ -49,7 +53,7 @@ const ProductTable = ({
                 </td>
               </tr>
             ) : (
-              products.map((product) => (
+              products.filter(Boolean).map((product) => (
                 <tr
                   key={product._id}
                   className="border-b hover:bg-gray-50"

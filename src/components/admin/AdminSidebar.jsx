@@ -58,24 +58,22 @@ const AdminSidebar = () => {
 
         <div className="space-y-2">
           {menus.map((menu) => (
-            <NavLink
-              key={menu.path}
-              to={menu.path}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-xl transition duration-300 ${
-                  isActive
-                    ? "bg-indigo-600 text-white"
-                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                }`
-              }
-            >
-              {menu.icon}
-
-              <span className="font-medium">
-                {menu.name}
-              </span>
-            </NavLink>
-          ))}
+  <NavLink
+    key={menu.path}
+    to={menu.path}
+    end={menu.path === "/admin"}
+    className={({ isActive }) =>
+      `flex items-center gap-3 px-4 py-3 rounded-xl transition duration-300 ${
+        isActive
+          ? "bg-indigo-600 text-white"
+          : "text-slate-300 hover:bg-slate-800 hover:text-white"
+      }`
+    }
+  >
+    {menu.icon}
+    <span className="font-medium">{menu.name}</span>
+  </NavLink>
+))}
         </div>
       </nav>
 

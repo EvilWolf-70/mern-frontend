@@ -21,10 +21,14 @@ const Products = () => {
     image: "",
     description: "",
   };
-
+const [searchTerm, setSearchTerm] = useState("");
   const [formData, setFormData] = useState(initialState);
   const [editingId, setEditingId] = useState(null);
 
+const filteredProducts = products.filter((product) =>
+  product?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  product?.category?.toLowerCase().includes(searchTerm.toLowerCase())
+);
   // Handle Input
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -103,7 +107,9 @@ const handleDelete = async (id) => {
           {/* Product Table */}
           <div className="lg:col-span-2">
             <ProductTable
-              products={products}
+              products={filteredProducts}
+               searchTerm={searchTerm}
+  setSearchTerm={setSearchTerm}
               onEdit={handleEdit}
               onDelete={handleDelete}
             />

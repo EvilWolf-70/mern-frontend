@@ -94,10 +94,10 @@ const placeOrder = async (orderData) => {
   }
 };
 
-  // useEffect(() => {
-  //   getAllOrders();
+  useEffect(() => {
+    getAllOrders();
    
-  // }, []);
+  }, []);
 
   const value = {
     orders,
