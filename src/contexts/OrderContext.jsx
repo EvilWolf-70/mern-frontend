@@ -3,7 +3,6 @@ import api from "../services/api";
 import { useAuth } from "./AuthContext";
 const OrderContext = createContext();
 
-
 export const useOrders = () => {
   const context = useContext(OrderContext);
 
@@ -17,7 +16,7 @@ export const useOrders = () => {
 export const OrderProvider = ({ children }) => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
-const { user } = useAuth();
+  const { user } = useAuth();
   // Get all orders
   const getAllOrders = async () => {
     try {
@@ -42,43 +41,14 @@ const { user } = useAuth();
     }
   };
 
-
-  //update the status
-  const updateOrderStatus = async (orderId, orderStatus) => {
-  try {
-    const { data } = await api.put(`/orders/${orderId}/status`, {
-         orderStatus,
-    });
-
-    setOrders((prev) =>
-      prev.map((order) =>
-        order._id === orderId
-          ? { ...order, orderStatus }
-          : order
-      )
-    );
-
-    return {
-      success: true,
-      data,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      message: error.response?.data?.message || "Failed to update order",
-    };
-  }
-};
-
-// Place Order
-const placeOrder = async (orderData) => {
+ const getMyOrders = async () => {
   try {
     setLoading(true);
 
-    const { data } = await api.post("/orders", orderData);
+    const { data } = await api.get("/orders/myorders");
 
-    // Add the newly created order to the state
-    setOrders((prev) => [data.order, ...prev]);
+    // Your backend returns an array directly
+    setOrders(data);
 
     return {
       success: true,
@@ -87,30 +57,84 @@ const placeOrder = async (orderData) => {
   } catch (error) {
     return {
       success: false,
-      message: error.response?.data?.message || "Failed to place order",
+      message: error.response?.data?.message || "Failed to fetch my orders",
     };
   } finally {
     setLoading(false);
   }
 };
 
-  useEffect(() => {
-    getAllOrders();
-   
-  }, []);
+  //update the status
+  const updateOrderStatus = async (orderId, orderStatus) => {
+    try {
+      const { data } = await api.put(`/orders/${orderId}/status`, {
+        orderStatus,
+      });
+
+      setOrders((prev) =>
+        prev.map((order) =>
+          order._id === orderId ? { ...order, orderStatus } : order,
+        ),
+      );
+
+      return {
+        success: true,
+        data,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to update order",
+      };
+    }
+  };
+
+  // Place Order
+  const placeOrder = async (orderData) => {
+    try {
+      setLoading(true);
+
+      const { data } = await api.post("/orders", orderData);
+
+      // Add the newly created order to the state
+      setOrders((prev) => [data.order, ...prev]);
+
+      return {
+        success: true,
+        data,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to place order",
+
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+ useEffect(() => {
+    if (!user) return;
+
+    if (user.isAdmin) {
+        getAllOrders();
+    } else {
+        getMyOrders();
+    }
+}, [user]);
 
   const value = {
     orders,
     loading,
     getAllOrders,
+      getMyOrders,
     updateOrderStatus,
-    placeOrder
+    placeOrder,
   };
 
   return (
-    <OrderContext.Provider value={value}>
-      {children}
-    </OrderContext.Provider>
+    <OrderContext.Provider value={value}>{children}</OrderContext.Provider>
   );
 };
 

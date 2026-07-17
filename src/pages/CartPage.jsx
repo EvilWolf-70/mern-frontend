@@ -12,9 +12,12 @@ const CartPage = () => {
     clearCart,
   } = useCart();
 
-  const { placeOrder } = useOrders();
+  const { placeOrder, getMyOrders } = useOrders();
+  
 
   const handlePlaceOrder = async () => {
+
+
     const orderData = {
       shippingAddress: {
         fullName: "John Doe",
@@ -48,7 +51,10 @@ const CartPage = () => {
     const result = await placeOrder(orderData);
 
     if (result.success) {
+      await getMyOrders();
+      
       alert("Order placed successfully!");
+  
 
       clearCart();
 
