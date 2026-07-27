@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import api from "../services/api";
+import { toast } from "react-toastify";
 const AuthContext = createContext();
 
 export const useAuth = () => {
@@ -110,6 +111,7 @@ export const AuthProvider = ({ children }) => {
   //logout
 
   const logout = () => {
+    toast.warning('Logout successfully')
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);

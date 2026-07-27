@@ -21,11 +21,17 @@ import { CartProvider } from "./contexts/CartContext";
 import AdminRoute from "./routes/AdminRoute";
 import AdminLayout from "./layouts/AdminLayout";
 import {OrderProvider} from "./contexts/OrderContext";
+import { ToastContainer } from 'react-toastify'
+import ForgotPasswordPage from "./pages/ForgotPassword";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
+// import Meta from "./components/Meta";
 function Layout() {
   const location = useLocation();
   const noHeaderFooterPatterns = [
     /^\/login$/,
     /^\/register$/,
+    /^\/forgot-password$/,
+    /^\/reset-password$/,
     /^\/admin(\/.*)?$/, // matches /admin and /admin/anything
   ];
 
@@ -34,12 +40,16 @@ function Layout() {
   );
   return (
     <>
+      
       {!hideHeaderFooter && <Header />}
       <Routes>
+       
         <Route path="/" element={<HomePage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
 
         {/* Protected Admin Routes */}
         <Route element={<AdminRoute />}>
@@ -52,6 +62,7 @@ function Layout() {
         <Route path="*" element={<NotFound />} />
       </Routes>
       {!hideHeaderFooter && <Footer />}
+      <ToastContainer/>
     </>
   );
 }

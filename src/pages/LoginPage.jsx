@@ -1,29 +1,59 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-
+import { toast } from "react-toastify";
 const LoginPage = () => {
   const navigate = useNavigate();
   const { login, loading } = useAuth();
 
-  const [error, setError] = useState("");
+  // const [error, setError] = useState("");
+  const [valError, setValError] = useState("");
 
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
+  const validateForm = () => {
+    const newErrors = {};
+
+    // Email validation
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    // Password validation
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    } else if (formData.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+    }
+
+    setValError(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
+    }));
+    setValError((prev) => ({
+      ...prev,
+      [name]: "",
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setError("");
+    if (!validateForm()) return;
+
+    setValError("");
 
     const result = await login({
       email: formData.email,
@@ -31,9 +61,14 @@ const LoginPage = () => {
     });
 
     if (result.success) {
-      navigate("/");
+      toast.success("Login Successfully!");
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
     } else {
-      setError(result.message);
+      toast.error(result.message);
+
+      // setError(result.message);
     }
   };
 
@@ -41,19 +76,15 @@ const LoginPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-white to-indigo-100 flex items-center justify-center px-4">
       <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-8">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800">
-            Welcome Back
-          </h1>
+          <h1 className="text-4xl font-bold text-gray-800">Welcome Back</h1>
 
-          <p className="text-gray-500 mt-2">
-            Login to continue
-          </p>
+          <p className="text-gray-500 mt-2">Login to continue</p>
         </div>
-{error && (
-            <div className="bg-red-100 border border-red-300 text-red-600 rounded-lg px-4 py-2">
-              {error}
-            </div>
-          )}
+        {/* {error && (
+          <div className="bg-red-100 border border-red-300 text-red-600 rounded-lg px-4 py-2">
+            {error}
+          </div>
+        )} */}
         <form className="space-y-5" onSubmit={handleSubmit}>
           <div>
             <label className="block mb-2 font-medium text-gray-700">
@@ -67,8 +98,10 @@ const LoginPage = () => {
               onChange={handleChange}
               placeholder="Enter your email"
               className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-              required
             />
+            {valError.email && (
+              <p className="text-red-500 text-sm mt-1">{valError.email}</p>
+            )}
           </div>
 
           <div>
@@ -83,11 +116,11 @@ const LoginPage = () => {
               onChange={handleChange}
               placeholder="Enter your password"
               className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-              required
             />
+            {valError.password && (
+              <p className="text-red-500 text-sm mt-1">{valError.password}</p>
+            )}
           </div>
-
-          
 
           <div className="flex justify-between items-center text-sm">
             <label className="flex items-center gap-2">

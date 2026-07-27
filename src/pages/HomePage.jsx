@@ -3,6 +3,8 @@ import { useProducts } from "../contexts/ProductContext";
 import { Link } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
 import ProductCard from "../components/ProductCard";
+import ProductCardSkeleton from "../components/skeleton/ProductCardSkeleton";
+import Meta from "../components/Meta";
 const HomePage = () => {
   const { products, loading, error } = useProducts();
   const { addToCart } = useCart();
@@ -11,6 +13,8 @@ const HomePage = () => {
 
   if (error) return <h2>{error}</h2>;
   return (
+    <>
+    <Meta />
     <div className="bg-gray-50 min-h-screen">
       <section className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
         <div className="max-w-7xl mx-auto px-5 py-24 grid md:grid-cols-2 gap-10 items-center">
@@ -51,19 +55,24 @@ const HomePage = () => {
           </p>
         </div>
 
-        {loading ? (
-          <div className="flex justify-center items-center py-20">
-            <div className="w-14 h-14 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-          </div>
-        ) : (
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {products.slice(0, 8).map((item) => (
-              <ProductCard key={item._id} item={item} addToCart={addToCart} />
-            ))}
-          </div>
-        )}
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          {loading
+            ? Array.from({ length: 8 }).map((_, index) => (
+                <ProductCardSkeleton key={index} />
+              ))
+            : products
+                .slice(0, 8)
+                .map((item) => (
+                  <ProductCard
+                    key={item._id}
+                    item={item}
+                    addToCart={addToCart}
+                  />
+                ))}
+        </div>
       </section>
     </div>
+      </>
   );
 };
 

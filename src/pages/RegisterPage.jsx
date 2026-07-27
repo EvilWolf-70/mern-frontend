@@ -1,6 +1,7 @@
 import { React, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { toast } from "react-toastify";
 const RegisterPage = () => {
   const navigate = useNavigate();
   const { user, register, loading } = useAuth();
@@ -11,7 +12,6 @@ const RegisterPage = () => {
     password: "",
     confirmPassword: "",
   });
-  console.log(user);
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -19,14 +19,51 @@ const RegisterPage = () => {
     });
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+
+    // Email validation
+    // Name validation
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required";
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = "Name must be at least 2 characters";
+    } else if (!/^[A-Za-z\s'-]+$/.test(formData.name.trim())) {
+      newErrors.name =
+        "Name can only contain letters, spaces, apostrophes, and hyphens";
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    // Password validation
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    } else if (formData.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+    }
+
+    // Confirm Password
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = "Confirm password is required";
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+
+    setError(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
 
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
+    if(!validateForm()) return ;
+
+    setError("");
 
     const result = await register({
       name: formData.name,
@@ -35,10 +72,13 @@ const RegisterPage = () => {
     });
 
     if (result.success) {
-      setError("Registration Successful");
-      navigate("/");
+      toast.success("Registration Successful");
+      setTimeout(() => {
+         navigate("/");
+      }, 1000);
+     
     } else {
-      setError(result.message);
+      toast.error(result.message);
     }
   };
 
@@ -50,11 +90,11 @@ const RegisterPage = () => {
 
           <p className="text-gray-500 mt-2">Register to get started</p>
         </div>
-        {error && (
+        {/* {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl">
             {error}
           </div>
-        )}
+        )} */}
         <form className="space-y-5" onSubmit={handleSubmit}>
           <div>
             <label className="block mb-2 font-medium">Full Name</label>
@@ -62,12 +102,14 @@ const RegisterPage = () => {
             <input
               type="text"
               name="name"
-              required
               value={formData.name}
               onChange={handleChange}
               placeholder="John Doe"
               className="w-full border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-300"
             />
+            {error.name && (
+              <p className="text-red-500 text-sm mt-1">{error.name}</p>
+            )}
           </div>
 
           <div>
@@ -76,12 +118,14 @@ const RegisterPage = () => {
             <input
               type="email"
               name="email"
-              required
               value={formData.email}
               onChange={handleChange}
               placeholder="john@gmail.com"
               className="w-full border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-300"
             />
+            {error.email && (
+              <p className="text-red-500 text-sm mt-1">{error.email}</p>
+            )}
           </div>
 
           <div>
@@ -90,12 +134,14 @@ const RegisterPage = () => {
             <input
               type="password"
               name="password"
-              required
               value={formData.password}
               onChange={handleChange}
               placeholder="********"
               className="w-full border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-300"
             />
+            {error.password && (
+              <p className="text-red-500 text-sm mt-1">{error.password}</p>
+            )}
           </div>
 
           <div>
@@ -107,15 +153,19 @@ const RegisterPage = () => {
               value={formData.confirmPassword}
               onChange={handleChange}
               placeholder="********"
-              required
               className="w-full border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-300"
             />
+            {error.confirmPassword && (
+              <p className="text-red-500 text-sm mt-1">
+                {error.confirmPassword}
+              </p>
+            )}
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl py-3 font-semibold duration-300 disabled:opacity-50"
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer rounded-xl py-3 font-semibold duration-300 disabled:opacity-50"
           >
             {loading ? "Creating..." : "Create Account"}
           </button>
